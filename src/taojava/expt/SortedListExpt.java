@@ -47,8 +47,7 @@ public class SortedListExpt
 
     // Iterate through the list once.
     heading(pen, "Iterating");
-    for (String str : strings)
-      ;
+    for (String str : strings);
 
     // Remove some of the elements
     heading(pen, "Removing");
@@ -61,8 +60,7 @@ public class SortedListExpt
 
     // Iterate through the list once.
     heading(pen, "Iterating again");
-    for (String str : strings)
-      ;
+    for (String str : strings);
 
     // Add a few more strings
     String[] second =
