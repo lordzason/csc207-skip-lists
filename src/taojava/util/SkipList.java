@@ -1,6 +1,8 @@
 package taojava.util;
 
 import java.util.Iterator;
+import java.util.Random;
+import java.util.Vector;
 
 /**
  * A randomized implementation of sorted lists.  
@@ -9,9 +11,10 @@ import java.util.Iterator;
  * @author Leah Greenberg
  * @author Zhi Chen
  * 
- * Code from:
- * http://www.sanfoundry.com/java-program-implement-skip-list/
+ * Consulted code from Nick Knoebeer and Eileen Fordham
+ * http://en.literateprograms.org/Skip_list_%28Java%29
  * 
+ * @Time: 5 hours
  */
 public class SkipList<T extends Comparable<T>>
     implements SortedList<T>
@@ -20,13 +23,15 @@ public class SkipList<T extends Comparable<T>>
   // | Fields |
   // +--------+
 
+  private final int MAX_LEVEL = 20;
+
+  private final double PROB = .5;
+
+  private T NIL = null;
+
   private Node header;
 
-  private int infinity;
-
-  private Node bottom = null;
-
-  private Node tail = null;
+  private int SkipListLevel = 0;
 
   // +------------------+------------------------------------------------
   // | Internal Classes |
@@ -44,55 +49,51 @@ public class SkipList<T extends Comparable<T>>
     /**
      * The value stored in the node.
      */
-    T val;
+    public T val;
     /**
-     * The node to the right.
+     * An array list of nodes.
      */
-    Node right;
+    public Vector<Node> levels;
     /**
-     * The node to the bottom.
+     * The level the node is on.
      */
-    Node down;
+    public int nodeLevel;
 
     /* Constructor */
-    public Node(T x)
+    public Node(int level, T value)
     {
-      this(x, null, null);
+      this.levels = new Vector<Node>(SkipListLevel + 1);
+      this.val = value;
     }//Node(T)
-
-    /* Constructor */
-    public Node(T x, Node rt, Node dt)
-    {
-      val = x;
-      right = rt;
-      down = dt;
-    }//Node(T, Node, Node)
 
   } // class Node
 
   // +--------------+----------------------------------------------------
   // | Constructors |
   // +--------------+
-  public SkipList(int inf)
+
+  public SkipList()
   {
-
-    this.infinity = inf;
-
-    bottom = new Node(0);
-
-    bottom.right = this.bottom.down = this.bottom;
-
-    tail = new Node(infinity);
-
-    tail.right = this.tail;
-
-    this.header = new Node(infinity, tail, bottom);
-
+    this.header = new Node(MAX_LEVEL, null);
   }//SkipList(int)
 
   // +-------------------------+-----------------------------------------
   // | Internal Helper Methods |
   // +-------------------------+
+
+  public int randomLevel()
+  {
+    int newLevel = 1;
+
+    Random rand = new Random();
+
+    while (rand.nextDouble() < this.PROB)
+      {
+        newLevel++;
+      }//while()
+
+    return Integer.min(newLevel, this.MAX_LEVEL);
+  }//randomLevel()
 
   // +-----------------------+-------------------------------------------
   // | Methods from Iterable |
@@ -123,6 +124,77 @@ public class SkipList<T extends Comparable<T>>
   public void add(T val)
   {
     // STUB
+    Vector<Node> update = new Vector<Node>(MAX_LEVEL);
+    
+    Node currentNode = this.header;
+    
+    for(int i = SkipListLevel; i >= 0; i--)
+      {
+        Node temp = currentNode.levels.get(i);
+        
+        while(temp.key < searchKey)
+          {
+            currentNode = temp;
+            update.add(i, currentNode);
+          }//while()
+        
+        currentNode = currentNode.levels.get(0);
+        
+        if(currentNode.key == searchKey)
+          {
+            currentNode.val = val;
+          }//if()
+        else
+          {
+            int newLevel = randomLevel();
+            
+            if(newLevel > SkipListLevel)
+              {
+                for(int i = SkipListLevel + 1; i <= newLevel; i++)
+                  {
+                    update[i] = this.header; //FIX
+                  }//for()
+                SkipListLevel = newLevel;
+              }//if()
+            currentNode = new Node(newLevel, val);
+            for(int j = 0; j <= newLevel; j++)
+              {
+                currentNode.levels.set(j, update.get(j).levels.elementAt(j));
+                update.get(j).levels.set(j, currentNode);
+              }//for()
+          }//else()
+            
+      }//for()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*
     Node current = header;
 
     bottom.val = val;
@@ -133,7 +205,7 @@ public class SkipList<T extends Comparable<T>>
           {
             current = current.right;
 
-            /*  If gap size is 3 or at bottom level and must insert, then promote middle element */
+            //  If gap size is 3 or at bottom level and must insert, then promote middle element
             if ((current.down.right.right.val).compareTo(current.val) < 0)
               {
                 current.right =
@@ -147,13 +219,14 @@ public class SkipList<T extends Comparable<T>>
               }//else()
           }//while()
       }//while()
-
-    /* Raise height of skiplist if necessary */
+    
+    //Raise height of skiplist if necessary
     if (header.right != tail)
       {
         header = new Node(infinity, tail, header);
       }//if()
-    
+    */
+
   } // add(T val)
 
   /**
@@ -161,8 +234,29 @@ public class SkipList<T extends Comparable<T>>
    */
   public boolean contains(T val)
   {
-    // STUB
-    return false;
+    Node currentNode = this.header;
+
+    for (int i = this.SkipListLevel; i >= 0; i--)
+      {
+        Node temp = currentNode.levels.get(i);
+
+        while ((temp != null) && (temp.val.compareTo(val) < 0))
+          {
+            currentNode = temp;
+          }//while()
+      }//for()
+
+    currentNode = currentNode.levels.get(0);
+
+    if ((currentNode.val == val) && (currentNode != null))
+      {
+        return true;
+      }//if()
+    else
+      {
+        return false;
+      }//else()
+
   } // contains(T)
 
   /**
