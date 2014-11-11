@@ -189,9 +189,8 @@ public class SkipList<T extends Comparable<T>>
     //find and record updates
     for (int i = SkipListLevel; i >= 0; i--)
       {
-        System.out.println(currentNode.next.get(i).val);
         
-        while ((currentNode.next.get(i) != null)
+        while ((currentNode.next.get(i).val != null) //"currentNode.next.get(i).val" is addition
                && (currentNode.next.get(i).val.compareTo(val) < 0))
           {
             currentNode = currentNode.next.get(i);
@@ -203,12 +202,14 @@ public class SkipList<T extends Comparable<T>>
     currentNode = currentNode.next.get(0);
 
     //Record header updates
-    if ((currentNode == null) || (currentNode.val.equals(val)))
+    if ((currentNode.val == null) || (currentNode.val.equals(val))) //"currentNode.val == null" is addition
       {
         int newLevel = randomLevel();
 
         if (newLevel > SkipListLevel)
           {
+            update.setSize(newLevel); //addition
+            
             for (int i = SkipListLevel + 1; i < newLevel; i++)
               {
                 update.set(i, this.header);
