@@ -1,0 +1,35 @@
+Part Five: Reflection
+
+We found the functions testOrdered() and inOrder() in SortedListTest.java interested for testing the code. 
+
+testOrdered() has an array list of strings called operations that store the messages on what was added. Random numbers from the
+range of 0 to 1000 are generated 100 times and added to ints, which is a SortedList of integers. If ints is not in order, an error is printed, 
+all the messages in operations are printed, the values stored in ints are printed, and a fail message is printed. 
+
+inOrder() first tests whether the iterator does not have a next element. If the iterator does not have a next element, the function returns
+true because the empty iterator is in order. Otherwise we get the next element and set it to the 'current' element. While the iterator has a 
+next element, we get the 'next' element. If the 'current' element is greater than the 'next' element, we return false because the elements are not
+in order. Otherwise, the 'next' element becomes the 'current' element. When all the elements have been tested, we return 'true' because the 
+elements are in order. 
+
+We can use the approach of testOrdered() and inOrder() in cases in real-world applications where things need to be ranked. For example,
+we can rank colleges. The approach of inOrder() will check whether the colleges are in order, from lowest to highest. Then testOrdered() can test
+whether they actually are in order. 
+
+We also found the function randomTest() in SortedListTest.java interesting.
+
+For randomTest(), we have 'operations', which is an array list of strings to keep track of operations we performed, so we can print them out later on, if testing fails.
+There is a boolean 'ok', initially set to true, which will switch to reflect errors. We have another array list to keep track of the values that are currently in the sorted list. 
+We add 1000 random values between 0 and 2000. If we randomly generate a true boolean, and if the sorted list does not contain the randomly generated value, 
+then we add the randomly generated value to 'vals', the array list of integers. Then we add a string that notes we added an element to 'operations'. 
+Then we add the randomly generated value to the sorted list. If the random number is still not contained, then we print out an error message saying 
+adding the value and contains still failed. 'ok' becomes 'false'. Otherwise if a 'false' boolean is randomly generated: We add a message saying we 
+removed the random element and then we actually remove the element from 'ints' and from 'vals'. If 'ints' still contains the randomly generated value,
+then we print a message saying contains succeeded, which means remove failed, and we change 'ok' to 'false'. We check whether ints still contained 'vals'
+after the removal. If 'ints' does not contain the value, then 'ok' is set to 'false' and we break. Otherwise is 'ok' is 'false', we print the messages in
+'operations', the values in 'ints', and a message saying the operations have failed.
+
+We can use this approach of randomTest() when testing for other things in which we have to keep track of the operations that were tested and in which
+random values need to be tested. For example, operations were selected at random for testing, it would be convenient to have those operations recorded
+for later review. 
+ 
