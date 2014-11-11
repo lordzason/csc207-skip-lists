@@ -39,7 +39,7 @@ public class SkipList<T extends Comparable<T>>
   private int SkipListLevel = 0;
 
   private int mods = 0;
-
+  
   // +------------------+------------------------------------------------
   // | Internal Classes |
   // +------------------+
@@ -60,7 +60,7 @@ public class SkipList<T extends Comparable<T>>
     /**
      * An array list of nodes.
      */
-    public Vector<Node> levels;
+    public Vector<Node> next;
     /**
      * The level the node is on.
      */
@@ -69,12 +69,13 @@ public class SkipList<T extends Comparable<T>>
     /* Constructor */
     public Node(int level, T value)
     {
-      this.levels = new Vector<Node>(SkipListLevel + 1);
+      this.next = new Vector<Node>(level + 1);
+      this.next.setSize(MAX_LEVEL);
       this.val = value;
 
       for (int i = 0; i < SkipListLevel; i++)
         {
-          this.levels.set(i, null);
+          this.next.set(i, null);
         }//for()
 
     }//Node(T)
@@ -92,9 +93,9 @@ public class SkipList<T extends Comparable<T>>
 
     for (int i = 0; i < MAX_LEVEL; i++)
       {
-        this.last.levels.set(i, null);
+        this.last.next.set(i, null);
 
-        this.header.levels.set(i, this.last);
+        this.header.next.set(i, this.last);
       }//for()
   }//SkipList(int)
 
@@ -147,7 +148,7 @@ public class SkipList<T extends Comparable<T>>
         {
           failFast();
 
-          return (cursor.levels.get(1) != null);
+          return (cursor.next.get(1) != null);
         }//hasNext()
 
         @Override
@@ -160,7 +161,7 @@ public class SkipList<T extends Comparable<T>>
               throw new NoSuchElementException();
             }//if()
           
-          this.cursor = this.cursor.levels.get(1);
+          this.cursor = this.cursor.next.get(1);
 
           return this.cursor.val;
         }//next()
@@ -188,16 +189,18 @@ public class SkipList<T extends Comparable<T>>
     //find and record updates
     for (int i = SkipListLevel; i >= 0; i--)
       {
-        while ((currentNode.levels.get(i) != null)
-               && (currentNode.levels.get(i).val.compareTo(val) < 0))
+        System.out.println(currentNode.next.get(i).val);
+        
+        while ((currentNode.next.get(i) != null)
+               && (currentNode.next.get(i).val.compareTo(val) < 0))
           {
-            currentNode = currentNode.levels.get(i);
+            currentNode = currentNode.next.get(i);
           }//while()
 
         update.add(i, currentNode);
       }//for()
 
-    currentNode = currentNode.levels.get(0);
+    currentNode = currentNode.next.get(0);
 
     //Record header updates
     if ((currentNode == null) || (currentNode.val.equals(val)))
@@ -221,9 +224,9 @@ public class SkipList<T extends Comparable<T>>
         //Update the nodes to point to the new node
         for (int i = 0; i <= newLevel; i++)
           {
-            currentNode.levels.set(i, update.elementAt(i).levels.get(i));
+            currentNode.next.set(i, update.elementAt(i).next.get(i));
 
-            update.elementAt(i).levels.set(i, currentNode);
+            update.elementAt(i).next.set(i, currentNode);
           }//for()
       }//if()
 
@@ -238,14 +241,14 @@ public class SkipList<T extends Comparable<T>>
 
     for (int i = this.SkipListLevel; i >= 0; i--)
       {
-        while ((currentNode.levels.get(i) != null)
-               && (currentNode.levels.get(i).val.compareTo(val) < 0))
+        while ((currentNode.next.get(i) != null)
+               && (currentNode.next.get(i).val.compareTo(val) < 0))
           {
-            currentNode = currentNode.levels.get(i);
+            currentNode = currentNode.next.get(i);
           }//while()
       }//for()
 
-    currentNode = currentNode.levels.get(0);
+    currentNode = currentNode.next.get(0);
 
     if ((currentNode.val == val) && (currentNode != null))
       {
@@ -272,16 +275,16 @@ public class SkipList<T extends Comparable<T>>
 
     for (int i = SkipListLevel; i >= 0; i--)
       {
-        while ((currentNode.levels.get(i) != null)
-               && (currentNode.levels.get(i).val.compareTo(val) < 0))
+        while ((currentNode.next.get(i) != null)
+               && (currentNode.next.get(i).val.compareTo(val) < 0))
           {
-            currentNode = currentNode.levels.get(i);
+            currentNode = currentNode.next.get(i);
           }//while()
 
         update.set(i, currentNode);
       }//for()
 
-    currentNode = currentNode.levels.get(0);
+    currentNode = currentNode.next.get(0);
 
     if (currentNode.val.equals(val))
       {
@@ -289,16 +292,16 @@ public class SkipList<T extends Comparable<T>>
         //Remove node from SkipList
         for (int i = 0; i <= SkipListLevel; i++)
           {
-            if (update.get(i).levels.get(i) != currentNode)
+            if (update.get(i).next.get(i) != currentNode)
               {
                 break;
               }//if()
-            update.get(i).levels.set(i, currentNode.levels.get(i));
+            update.get(i).next.set(i, currentNode.next.get(i));
           }//for()
 
         //Decrease list level
         while ((SkipListLevel > 0)
-               && (this.header.levels.get(SkipListLevel) == null))
+               && (this.header.next.get(SkipListLevel) == null))
           {
             SkipListLevel--;
           }//while()
