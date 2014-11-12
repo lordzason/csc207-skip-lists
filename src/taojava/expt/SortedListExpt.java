@@ -74,9 +74,12 @@ public class SortedListExpt
     strings.dump();
 
     // And look up elements by index
+    //Index not implemented
+    /*
     heading(pen, "Iterating by index");
     int len = slist.length();
     for (int i = 1; i < len; i+= 3)
       strings.get(i);
+    */
   } // stringExperiment
 } // SortedListExpt

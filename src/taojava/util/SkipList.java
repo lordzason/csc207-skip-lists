@@ -28,18 +28,21 @@ public class SkipList<T extends Comparable<T>>
   // | Fields |
   // +--------+
 
+  //The maximum level for the Skip List is determined to be 20, by default.
   private final int MAX_LEVEL = 20;
 
+  //The probability to create a new level is .5
   private final double PROB = .5;
 
-  private Node header;
+  //The header or dummy node
+  private Node<T> header;
 
-  private Node last;
+  //Keeps track of the current level in the Skip List
+  private int SkipListLevel;
 
-  private int SkipListLevel = 0;
-
+  //A counter to keep track of modifications
   private int mods = 0;
-  
+
   // +------------------+------------------------------------------------
   // | Internal Classes |
   // +------------------+
@@ -47,7 +50,7 @@ public class SkipList<T extends Comparable<T>>
   /**
    * Nodes for skip lists.
    */
-  public class Node
+  public class Node<T>
   {
     // +--------+--------------------------------------------------------
     // | Fields |
@@ -60,7 +63,7 @@ public class SkipList<T extends Comparable<T>>
     /**
      * An array list of nodes.
      */
-    public Vector<Node> next;
+    public Node<T>[] next;
     /**
      * The level the node is on.
      */
@@ -69,15 +72,8 @@ public class SkipList<T extends Comparable<T>>
     /* Constructor */
     public Node(int level, T value)
     {
-      this.next = new Vector<Node>(level + 1);
-      this.next.setSize(MAX_LEVEL);
+      this.next = new Node[level + 1];
       this.val = value;
-
-      for (int i = 0; i < SkipListLevel; i++)
-        {
-          this.next.set(i, null);
-        }//for()
-
     }//Node(T)
 
   } // class Node
@@ -88,21 +84,16 @@ public class SkipList<T extends Comparable<T>>
 
   public SkipList()
   {
-    this.header = new Node(MAX_LEVEL, null);
-    this.last = new Node(MAX_LEVEL, null);
-
-    for (int i = 0; i < MAX_LEVEL; i++)
-      {
-        this.last.next.set(i, null);
-
-        this.header.next.set(i, this.last);
-      }//for()
+    this.header = new Node<T>(MAX_LEVEL, null);
+    this.SkipListLevel = 0;
   }//SkipList(int)
 
   // +-------------------------+-----------------------------------------
   // | Internal Helper Methods |
   // +-------------------------+
 
+  //A new level is created if a randomly generated number 
+  //is less than the probability
   public int randomLevel()
   {
     int newLevel = 1;
@@ -128,10 +119,9 @@ public class SkipList<T extends Comparable<T>>
    */
   public Iterator<T> iterator()
   {
-    // STUB
     return new Iterator<T>()
       {
-        Node cursor = SkipList.this.header;
+        Node<T> cursor = SkipList.this.header;
 
         int mods = SkipList.this.mods;
 
@@ -148,7 +138,7 @@ public class SkipList<T extends Comparable<T>>
         {
           failFast();
 
-          return (cursor.next.get(1) != null);
+          return (cursor.next[1] != null);
         }//hasNext()
 
         @Override
@@ -160,8 +150,8 @@ public class SkipList<T extends Comparable<T>>
             {
               throw new NoSuchElementException();
             }//if()
-          
-          this.cursor = this.cursor.next.get(1);
+
+          this.cursor = this.cursor.next[1];
 
           return this.cursor.val;
         }//next()
@@ -176,82 +166,87 @@ public class SkipList<T extends Comparable<T>>
   /**
    * Add a value to the set.
    *
+   * @param val, the value to be added 
    * @post contains(val)
    * @post For all lav != val, if contains(lav) held before the call
    *   to add, contains(lav) continues to hold.
    */
   public void add(T val)
   {
-    Vector<Node> update = new Vector<Node>(MAX_LEVEL + 1);
+    Node<T> currentNode = this.header;
+    Node<T>[] update = new Node[MAX_LEVEL + 1];
 
-    Node currentNode = this.header;
-
-    //find and record updates
+    //Find and record updates
     for (int i = SkipListLevel; i >= 0; i--)
       {
-        
-        while ((currentNode.next.get(i).val != null) //"currentNode.next.get(i).val" is addition
-               && (currentNode.next.get(i).val.compareTo(val) < 0))
+        while ((currentNode.next[i] != null)
+               && (((Comparable<T>) currentNode.next[i].val).compareTo(val) < 0))
           {
-            currentNode = currentNode.next.get(i);
+            currentNode = currentNode.next[i];
           }//while()
 
-        update.add(i, currentNode);
+        update[i] = currentNode;
       }//for()
 
-    currentNode = currentNode.next.get(0);
+    currentNode = currentNode.next[0];
 
-    //Record header updates
-    if ((currentNode.val == null) || (currentNode.val.equals(val))) //"currentNode.val == null" is addition
+    if ((currentNode == null) || (!currentNode.val.equals(val)))
       {
         int newLevel = randomLevel();
 
+        //Record header updates
         if (newLevel > SkipListLevel)
           {
-            update.setSize(newLevel); //addition
-            
-            for (int i = SkipListLevel + 1; i < newLevel; i++)
+
+            for (int i = SkipListLevel + 1; i <= newLevel; i++)
               {
-                update.set(i, this.header);
+                update[i] = this.header;
               }//for()
 
             SkipListLevel = newLevel;
-
           }//if()
 
         //Insert new node
-        currentNode = new Node(newLevel, val); //create the new node
+        currentNode = new Node(newLevel, val);
 
         //Update the nodes to point to the new node
         for (int i = 0; i <= newLevel; i++)
           {
-            currentNode.next.set(i, update.elementAt(i).next.get(i));
+            currentNode.next[i] = update[i].next[i];
 
-            update.elementAt(i).next.set(i, currentNode);
+            update[i].next[i] = currentNode;
           }//for()
       }//if()
+
+    //Increase the mods count after adding an element
+    mods++;
 
   } // add(T val)
 
   /**
    * Determine if the set contains a particular value.
+   * 
+   * @param val, the value to be checked whether the Skip List cotnains it
+   * @post returns TRUE, if val is found in the Skip List
+   * @post returns FALSE, if val is not found in the Skip List
    */
   public boolean contains(T val)
   {
-    Node currentNode = this.header;
+    Node<T> currentNode = this.header;
 
+    //Find the node
     for (int i = this.SkipListLevel; i >= 0; i--)
       {
-        while ((currentNode.next.get(i) != null)
-               && (currentNode.next.get(i).val.compareTo(val) < 0))
+        while ((currentNode.next[i] != null)
+               && (currentNode.next[i].val.compareTo(val) < 0))
           {
-            currentNode = currentNode.next.get(i);
+            currentNode = currentNode.next[i];
           }//while()
       }//for()
 
-    currentNode = currentNode.next.get(0);
+    currentNode = currentNode.next[0];
 
-    if ((currentNode.val == val) && (currentNode != null))
+    if ((currentNode != null) && (currentNode.val.equals(val))) //why this order?
       {
         return true;
       }//if()
@@ -259,54 +254,65 @@ public class SkipList<T extends Comparable<T>>
       {
         return false;
       }//else()
+
   } // contains(T)
 
   /**
    * Remove an element from the set.
    *
+   * @param val, the value to be removed from the Skip List
+   * @pre An element is in the Skip List before the remove method is called
    * @post !contains(val)
    * @post For all lav != val, if contains(lav) held before the call
    *   to remove, contains(lav) continues to hold.
    */
   public void remove(T val)
   {
-    Node currentNode = this.header;
+    Node<T> currentNode = this.header;
 
-    Vector<Node> update = new Vector<Node>(MAX_LEVEL + 1);
+    Node<T>[] update = new Node[MAX_LEVEL + 1];
 
+    //Find and record updates
     for (int i = SkipListLevel; i >= 0; i--)
       {
-        while ((currentNode.next.get(i) != null)
-               && (currentNode.next.get(i).val.compareTo(val) < 0))
+        while ((currentNode.next[i] != null)
+               && (currentNode.next[i].val.compareTo(val) < 0))
           {
-            currentNode = currentNode.next.get(i);
+            currentNode = currentNode.next[i];
           }//while()
 
-        update.set(i, currentNode);
+        update[i] = currentNode;
       }//for()
 
-    currentNode = currentNode.next.get(0);
+    currentNode = currentNode.next[0];
 
     if (currentNode.val.equals(val))
       {
-
         //Remove node from SkipList
         for (int i = 0; i <= SkipListLevel; i++)
           {
-            if (update.get(i).next.get(i) != currentNode)
+            if (update[i].next[i] != currentNode)
               {
                 break;
               }//if()
-            update.get(i).next.set(i, currentNode.next.get(i));
+            update[i].next[i] = currentNode.next[i];
           }//for()
 
         //Decrease list level
-        while ((SkipListLevel > 0)
-               && (this.header.next.get(SkipListLevel) == null))
+        while ((SkipListLevel > 0) && (this.header.next[SkipListLevel] == null))
           {
             SkipListLevel--;
           }//while()
+
+        //Increase the mods count after removing an element
+        mods++;
+
       }//if()
+    else
+      {
+        return;
+      }
+
   } // remove(T)
 
   // +--------------------------+----------------------------------------
@@ -340,13 +346,20 @@ public class SkipList<T extends Comparable<T>>
 
     SkipList<Integer> skiplist = new SkipList<Integer>();
 
-    pen.println(skiplist);
+    pen.println(skiplist.toString());
 
     skiplist.add(5);
+    skiplist.add(9);
+    skiplist.add(5);
+    skiplist.add(6);
     skiplist.add(6);
     skiplist.add(7);
     skiplist.add(8);
+    skiplist.add(7);
     skiplist.add(9);
+    skiplist.add(8);
+    skiplist.add(10);
+    skiplist.add(4);
     skiplist.add(10);
     skiplist.add(4);
 
@@ -356,11 +369,11 @@ public class SkipList<T extends Comparable<T>>
 
       }//if()
 
-    pen.println(skiplist);
+    pen.println(skiplist.toString());
 
     skiplist.remove(7);
 
-    pen.println(skiplist);
+    pen.println(skiplist.toString());
 
     if (!skiplist.contains(7))
       {
