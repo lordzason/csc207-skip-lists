@@ -35,7 +35,7 @@ public class SortedListAnalyzer
     // Set up timers for various parts of the analysis.
     SimpleTimer overall = new SimpleTimer(); // Overall time
     SimpleTimer adds1 = new SimpleTimer(); // First n adds
-    SimpleTimer indices = new SimpleTimer(); // n calls to get
+    //SimpleTimer indices = new SimpleTimer(); // n calls to get
     SimpleTimer iterate = new SimpleTimer(); // Time to iterate
     SimpleTimer adds2 = new SimpleTimer(); // Next n adds
     SimpleTimer removes1 = new SimpleTimer(); // First n removes
@@ -55,12 +55,12 @@ public class SortedListAnalyzer
     int len = sl.length();
 
     // Index
-    indices.start();
+    /*indices.start();
     for (int i = 0; i < n; i++)
       {
         sl.get(random.nextInt(len));
       } // for
-    indices.stop();
+    indices.stop();*/
 
     // Iterate
     iterate.start();
@@ -98,7 +98,7 @@ public class SortedListAnalyzer
 
     // And we're done
     overall.stop();
-    return new long[] { overall.elapsed(), adds1.elapsed(), indices.elapsed(),
+    return new long[] { overall.elapsed(), adds1.elapsed(), //indices.elapsed()
                        iterate.elapsed(), adds2.elapsed(), removes1.elapsed(),
                        removes2.elapsed() };
   } // analyze(SortedList<Integer>, int)
@@ -110,22 +110,22 @@ public class SortedListAnalyzer
   public static void analyze(PrintWriter pen, SortedList<Integer> sl, int n,
                              int reps)
   {
-    pen.printf("         %8s%8s%8s%8s%8s%8s%8s\n", "add/1", "index", "iterate",
+    pen.printf("         %8s%8s%8s%8s%8s%8s\n", "add/1", "iterate",
                "add/2", "rem/1", "rem/2", "total");
 
-    long[] results = new long[7];
+    long[] results = new long[6];
     for (int rep = 0; rep < reps; rep++)
       {
         long[] round = analyze(sl, n);
         for (int i = 0; i < results.length; i++)
           results[i] += round[i];
-        pen.printf("Round %2d %8d%8d%8d%8d%8d%8d%8d\n", rep, round[1], round[2],
-                   round[3], round[4], round[5], round[6], round[0]);
+        pen.printf("Round %2d %8d%8d%8d%8d%8d%8d\n", rep, round[1],
+                   round[2], round[3], round[4], round[5], round[0]);
       } // for (i)
-    long[] averages = new long[7];
+    long[] averages = new long[6];
     for (int i = 0; i < results.length; i++)
       averages[i] = results[i] / reps;
-    pen.printf("Average  %8d%8d%8d%8d%8d%8d%8d\n", averages[1], averages[2],
-               averages[3], averages[4], averages[5], averages[6], averages[0]);
+    pen.printf("Average  %8d%8d%8d%8d%8d%8d\n", averages[1], averages[2],
+               averages[3], averages[4], averages[5], averages[0]);
   } // analyze(PrintWriter, SortedList<Integer>, int, int)
 } // class SortedListAnalyzer

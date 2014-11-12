@@ -176,7 +176,7 @@ public class SortedListTest
   /**
    * An extensive randomized test.
    */
- /* @Test
+  @Test
   public void randomTest()
   {
     // Set up a list of all the operations we performed.  (That way,
@@ -235,7 +235,7 @@ public class SortedListTest
             fail("Operations failed");
           } // if (!ok)
       } // for i
-  } // randomTest()*/
+  } // randomTest()
 
   //+------------------------+--------------------------------------------------
   //| Six Other Useful Tests |
@@ -243,18 +243,18 @@ public class SortedListTest
   /**
    * Testing removals on a empty Skip List
    */
-  /*@Test
+  @Test
   public void singleRemovalTest()
   {
     strings.remove("hello");
     ints.remove(100);
-  }//singleRemovalTest()*/
+  }//singleRemovalTest()
 
   /**
    * An addition to the simpleTest()
    */
   @Test
-  public void anotherSimpleTest()
+  public void simpleStringTest()
   {
     strings.add("Hello");
     strings.add("World");
@@ -266,8 +266,89 @@ public class SortedListTest
     assertTrue(strings.contains("Hello"));
     assertTrue(strings.contains("Sam"));
     assertFalse(strings.contains("World"));
-  }
+  }//simpleStringTest()
 
+  /**
+   * Testing add, remove, and contain
+   */
+  @Test
+  public void simpleIntegerTest()
+  {
+    ints.add(5);
+    ints.add(6);
+    ints.add(5);
+    ints.add(7);
+    ints.add(6);
+    ints.add(8);
+    ints.add(7);
+    ints.add(8);
+    ints.add(9);
+    ints.add(10);
+
+    assertTrue(ints.contains(7));
+
+    ints.remove(7);
+
+    assertFalse(ints.contains(7));
+  }//simpleIntegerTest()
+
+  /**
+   * Testing add, remove, and contain
+   */
+  @Test
+  public void lessSimpleIntegerTest()
+  {
+    ints.add(5);
+    ints.add(6);
+    ints.add(7);
+    ints.add(8);
+    ints.add(9);
+    ints.add(10);
+
+    assertTrue(ints.contains(5));
+    assertTrue(ints.contains(6));
+    assertTrue(ints.contains(7));
+    assertTrue(ints.contains(8));
+    assertTrue(ints.contains(9));
+    assertTrue(ints.contains(10));
+
+    ints.remove(5);
+    ints.remove(7);
+    ints.remove(9);
+    
+    assertFalse(ints.contains(5));
+    assertFalse(ints.contains(7));
+    assertFalse(ints.contains(9));
+    assertTrue(ints.contains(8));
+    assertTrue(ints.contains(6));
+    assertTrue(ints.contains(10));
+    
+  }//lessSimpleIntegerTest()
+  
+  /**
+   * Testing add, remove, and contain
+   */
+  @Test
+  public void lessSimpleStringTest()
+  {
+    strings.add("A");
+    strings.remove("A");
+    strings.add("B");
+    strings.add("C");
+    strings.add("D");
+    strings.remove("D");
+    strings.add("E");
+    strings.remove("C");
+    
+    assertTrue(strings.contains("B"));
+    assertTrue(strings.contains("E"));
+    
+    assertFalse(strings.contains("A"));
+    assertFalse(strings.contains("C"));
+    assertFalse(strings.contains("D"));
+    
+  }//lessSimpleStringTest()
+  
   /**
    * Verify that values from a randomly created list of values
    * are removed from the Skip List.
@@ -292,7 +373,7 @@ public class SortedListTest
       {
         ints.remove(val);
       } // for val
-    
+
     for (Integer val : vals)
       {
         if (ints.contains(val))

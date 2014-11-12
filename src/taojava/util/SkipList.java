@@ -19,7 +19,7 @@ import java.util.Vector;
  * Zoe Wolter,
  * http://en.literateprograms.org/Skip_list_%28Java%29
  * 
- * @Time: 7.5 hours
+ * @Time: 10.5 hours
  */
 public class SkipList<T extends Comparable<T>>
     implements SortedList<T>
@@ -155,6 +155,18 @@ public class SkipList<T extends Comparable<T>>
 
           return this.cursor.val;
         }//next()
+        
+        public void remove()
+        {
+          failFast();
+          
+          T temp = cursor.val;
+          
+          SkipList.this.remove(temp);
+          
+          this.mods++;
+          
+        }//remove()
 
       };//Iterator<T>
   } // iterator()
@@ -286,7 +298,11 @@ public class SkipList<T extends Comparable<T>>
 
     currentNode = currentNode.next[0];
 
-    if (currentNode.val.equals(val))
+    if(currentNode == null) //why doesn't .equal work?!
+      {
+        return;
+      }//if()
+    else if (currentNode.val.equals(val))
       {
         //Remove node from SkipList
         for (int i = 0; i <= SkipListLevel; i++)
@@ -307,11 +323,7 @@ public class SkipList<T extends Comparable<T>>
         //Increase the mods count after removing an element
         mods++;
 
-      }//if()
-    else
-      {
-        return;
-      }
+      }//else if()
 
   } // remove(T)
 
@@ -340,44 +352,4 @@ public class SkipList<T extends Comparable<T>>
     return 0;
   } // length()
 
-  public static void main(String args[])
-  {
-    PrintWriter pen = new PrintWriter(System.out, true);
-
-    SkipList<Integer> skiplist = new SkipList<Integer>();
-
-    pen.println(skiplist.toString());
-
-    skiplist.add(5);
-    skiplist.add(9);
-    skiplist.add(5);
-    skiplist.add(6);
-    skiplist.add(6);
-    skiplist.add(7);
-    skiplist.add(8);
-    skiplist.add(7);
-    skiplist.add(9);
-    skiplist.add(8);
-    skiplist.add(10);
-    skiplist.add(4);
-    skiplist.add(10);
-    skiplist.add(4);
-
-    if (skiplist.contains(7))
-      {
-        pen.println("7 is in the list! :)");
-
-      }//if()
-
-    pen.println(skiplist.toString());
-
-    skiplist.remove(7);
-
-    pen.println(skiplist.toString());
-
-    if (!skiplist.contains(7))
-      {
-        pen.println("7 has been deleted! :(");
-      }//if()
-  }//main()
 } // class SkipList<T>
