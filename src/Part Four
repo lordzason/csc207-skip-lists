@@ -1,0 +1,57 @@
+Part Four: Experimentally Analyze Skip Lists
+
+The following are our experimental results:
+
+SortedArrayListAnalyzer.java Results
+            add/1 iterate   add/2   rem/1   rem/2   total
+Round  0       54       7     118     198      63     377
+Round  1       40       1     143     205      61     389
+Round  2       40       0     113     191      61     344
+Round  3       39       1     108     223      83     371
+Round  4       40       0     114     191      61     345
+Round  5       40       0     108     193      61     341
+Round  6       39       0     121     193      61     353
+Round  7       39       1     108     191      61     339
+Round  8       39       1     107     193      62     340
+Round  9       39       1     108     190      61     338
+Round 10       40       0     108     191      61     339
+Round 11       40       0     108     191      61     340
+Round 12       40       0     108     191      61     339
+Round 13       40       0     108     192      61     340
+Round 14       39       0     110     192      61     341
+Round 15       44       0     108     192      61     344
+Round 16       39       1     107     191      60     338
+Round 17       39       0     108     192      61     339
+Round 18       40       0     107     193      61     340
+Round 19       40       0     108     192      61     340
+Average        40       0     111     194      62     346
+
+SkipListAnalyzer.java Results
+            add/1 iterate   add/2   rem/1   rem/2   total
+Round  0       57       6      31      52      10     146
+Round  1       32       5      36      24       4      97
+Round  2       24       3      38     236       6     301
+Round  3       18       2      29      19       7      68
+Round  4       18       1      27      17       5      63
+Round  5       20       1      22      16       6      59
+Round  6       19       2      32      19       6      72
+Round  7       18       2      28      18       6      66
+Round  8       19       2      33      19       7      73
+Round  9       19       2      31      18       6      70
+Round 10       18       2      34      19       6      73
+Round 11       21       2      33      19       3      75
+Round 12       18       2      30      18       5      68
+Round 13       19       2      31      18       6      70
+Round 14       18       2      40      11       4      71
+Round 15       18       2      31      18       6      69
+Round 16       20       2      30      18       6      70
+Round 17       18       2      31      19       7      70
+Round 18       20       2      46      11       3      79
+Round 19       18       2      30      18       6      68
+Average        21       2      32      30       5      86
+
+As the results have shown, Skip Lists are generally faster overall.
+They are faster for adding and removing. However, Sorted Array Lists are
+faster at indexing. When elements have to be added or removed, a Skip List
+should be used. When elements have to be iterated through, a Sorted Array List
+should be used.
