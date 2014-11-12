@@ -1,10 +1,12 @@
 package taojava.test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
-
-import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -56,7 +58,7 @@ public class SortedListTest
       } // for
     System.err.println("]");
   } // dump
-  
+
   /**
    * Determine if an iterator only returns values in non-decreasing
    * order.
@@ -174,7 +176,7 @@ public class SortedListTest
   /**
    * An extensive randomized test.
    */
-  @Test
+ /* @Test
   public void randomTest()
   {
     // Set up a list of all the operations we performed.  (That way,
@@ -182,7 +184,7 @@ public class SortedListTest
     ArrayList<String> operations = new ArrayList<String>();
     // Keep track of the values that are currently in the sorted list.
     ArrayList<Integer> vals = new ArrayList<Integer>();
-    
+
     // Add a bunch of values
     for (int i = 0; i < 1000; i++)
       {
@@ -209,7 +211,8 @@ public class SortedListTest
             vals.remove((Integer) rand);
             if (ints.contains(rand))
               {
-                System.err.println("After removing " + rand + " contains succeeds");
+                System.err.println("After removing " + rand
+                                   + " contains succeeds");
                 ok = false;
               } // if ints.contains(rand)
           } // if we remove
@@ -232,5 +235,75 @@ public class SortedListTest
             fail("Operations failed");
           } // if (!ok)
       } // for i
-  } // randomTest()
+  } // randomTest()*/
+
+  //+------------------------+--------------------------------------------------
+  //| Six Other Useful Tests |
+  //+------------------------+
+  /**
+   * Testing removals on a empty Skip List
+   */
+  /*@Test
+  public void singleRemovalTest()
+  {
+    strings.remove("hello");
+    ints.remove(100);
+  }//singleRemovalTest()*/
+
+  /**
+   * An addition to the simpleTest()
+   */
+  @Test
+  public void anotherSimpleTest()
+  {
+    strings.add("Hello");
+    strings.add("World");
+
+    strings.remove("World");
+
+    strings.add("Sam");
+
+    assertTrue(strings.contains("Hello"));
+    assertTrue(strings.contains("Sam"));
+    assertFalse(strings.contains("World"));
+  }
+
+  /**
+   * Verify that values from a randomly created list of values
+   * are removed from the Skip List.
+   */
+  @Test
+  public void testRemovesAll()
+  {
+    ArrayList<String> operations = new ArrayList<String>();
+    ArrayList<Integer> vals = new ArrayList<Integer>();
+
+    //  Add a bunch of values
+    for (int i = 0; i < 100; i++)
+      {
+        int rand = random.nextInt(200);
+        vals.add(rand);
+        operations.add("ints.add(" + rand + ")");
+        ints.add(rand);
+      } // for i
+
+    //  Remove values
+    for (Integer val : vals)
+      {
+        ints.remove(val);
+      } // for val
+    
+    for (Integer val : vals)
+      {
+        if (ints.contains(val))
+          {
+            System.err.println("remove(" + val + ") failed");
+            for (String op : operations)
+              System.err.println(op + ";");
+            dump(ints);
+            fail(val + " is in the sortedlist");
+          } // if (!ints.contains(val))
+      } // for val
+  } // testRemovesAll()
+
 } // class SortedListTest
