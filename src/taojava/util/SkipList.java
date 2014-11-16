@@ -15,6 +15,7 @@ import java.util.Vector;
  * @author Zhi Chen
  * 
  * Consulted code from:
+ * William Pugh
  * Nick Knoebeer and Eileen Fordham,
  * Zoe Wolter,
  * http://en.literateprograms.org/Skip_list_%28Java%29
